@@ -7,10 +7,15 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,6 +25,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback {
 
@@ -32,6 +41,11 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
 
     Location currentLocation;
 
+    LatLng searchedLocation;
+    private Marker searchedPlace;
+
+    EditText txtSearchPlace;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +54,8 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        txtSearchPlace = findViewById(R.id.txtMapSearch);
     }
 
     @Override
@@ -51,12 +67,12 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                startUpdateLocation();
-                if(currentLocation != null){
-                    homeMarker.remove();
-                    LatLng northAmerica = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                    setHomeMarker(northAmerica);
-                }
+//                startUpdateLocation();
+//                if(currentLocation != null){
+//                    homeMarker.remove();
+//                    LatLng northAmerica = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+//                    setHomeMarker(northAmerica);
+//                }
             }
 
             @Override
@@ -122,6 +138,40 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
 
                 currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             }
+        }
+    }
+
+    public void searchPlace(View view) {
+        String placeName = txtSearchPlace.getText().toString().trim();
+
+        if (placeName.isEmpty()) {
+            txtSearchPlace.setError("Please type something.");
+            txtSearchPlace.requestFocus();
+            return;
+        }
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+        try {
+            List<Address> addressList = geocoder.getFromLocationName(placeName, 1);
+
+            if(addressList.size()>0){
+                Address address = addressList.get(0);
+
+                if(searchedPlace != null) searchedPlace.remove();
+
+                searchedLocation = new LatLng(address.getLatitude(), address.getLongitude());
+                MarkerOptions options = new MarkerOptions().position(searchedLocation)
+                        .title(placeName)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                searchedPlace = mMap.addMarker(options);
+                searchedPlace.showInfoWindow();
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(searchedLocation, 14));
+            }else{
+                Toast.makeText(this, "Address can't be find.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

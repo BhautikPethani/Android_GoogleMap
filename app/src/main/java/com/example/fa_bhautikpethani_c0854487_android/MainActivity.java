@@ -22,4 +22,8 @@ public class MainActivity extends AppCompatActivity {
     public void goBack(View view) {
         finish();
     }
+
+    public void searchPlace(View view) {
+        
+    }
 }
