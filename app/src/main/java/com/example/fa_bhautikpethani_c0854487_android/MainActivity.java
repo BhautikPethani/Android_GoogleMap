@@ -18,4 +18,8 @@ public class MainActivity extends AppCompatActivity {
     public void goToAddNewPlace(View view) {
         startActivity(new Intent(this, AddNewPlace.class));
     }
+
+    public void goBack(View view) {
+        finish();
+    }
 }
