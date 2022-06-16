@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable/menu.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/rounded_border_edittext.xml" value="0.1025" />
+        <entry key="app/src/main/res/layout/activity_add_new_place.xml" value="0.1339918946301925" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19273529052734384" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1" />
       </map>
