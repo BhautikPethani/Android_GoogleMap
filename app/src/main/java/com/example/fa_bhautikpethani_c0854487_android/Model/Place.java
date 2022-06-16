@@ -5,9 +5,9 @@ public class Place {
     private String placeAddress;
     private double latitude;
     private double longitude;
-    private boolean status;
+    private int status;
 
-    public Place(int id, String placeAddress, double latitude, double longitude, boolean status){
+    public Place(int id, String placeAddress, double latitude, double longitude, int status){
         this.id = id;
         this.placeAddress = placeAddress;
         this.latitude = latitude;
@@ -26,6 +26,6 @@ public class Place {
     public void setLongitude(Double longitude){this.longitude = longitude;}
     public double getLongitude(){return longitude;}
 
-    public void setStatus(Boolean status){this.status = status;}
-    public boolean getStatus() {return status;}
+    public void setStatus(int status){this.status = status;}
+    public int getStatus() {return status;}
 }

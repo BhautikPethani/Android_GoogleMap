@@ -24,7 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String sqlQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" +
                 COLUMN_ID + " INTEGER NOT NULL CONSTRAINT product_pk PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_ADDRESS + " VARCHAR(200) NOT NULL, " +
+                COLUMN_ADDRESS + " VARCHAR(100) NOT NULL, " +
                 COLUMN_LATITUDE + " DOUBLE NOT NULL, " +
                 COLUMN_LONGITUDE + " DOUBLE NOT NULL, " +
                 COLUMN_STATUS + " INTEGER NOT NULL);";

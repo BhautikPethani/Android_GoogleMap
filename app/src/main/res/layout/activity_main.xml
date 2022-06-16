@@ -45,15 +45,14 @@
                 android:orientation="vertical">
 
                 <ImageButton
-                    android:id="@+id/btnAdd"
-                    android:layout_width="45dp"
-                    android:layout_height="30dp"
+                    android:id="@+id/btnAddPlace"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_marginTop="40dp"
                     android:layout_marginBottom="20dp"
-                    android:background="@drawable/add"
+                    android:background="@drawable/rounded_add"
                     android:onClick="goToAddNewPlace"
-                    android:paddingTop="30dp"
-                    android:paddingBottom="20dp" />
+                    android:scaleType="fitCenter" />
             </LinearLayout>
         </LinearLayout>
 

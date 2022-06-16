@@ -5,7 +5,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.inputmethodservice.Keyboard;
@@ -21,6 +23,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.fa_bhautikpethani_c0854487_android.Model.Place;
+import com.example.fa_bhautikpethani_c0854487_android.services.DBHelper;
 import com.example.fa_bhautikpethani_c0854487_android.services.Utilities;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,8 +34,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,6 +57,9 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
     private Marker searchedPlaceMarker;
 
     EditText txtSearchPlace;
+    String placeTitle = "";
+
+    DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +71,7 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
         mapFragment.getMapAsync(this);
 
         txtSearchPlace = findViewById(R.id.txtMapSearch);
+        dbHelper = new DBHelper(this);
     }
 
     @Override
@@ -100,17 +111,14 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
             requestLocationPermission();
         else {
             startUpdateLocation();
-            if(currentLocation != null){
-                LatLng northAmerica = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                setHomeMarker(northAmerica);
-            }
+            LatLng northAmerica = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            setHomeMarker(northAmerica);
         }
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(@NonNull LatLng latLng) {
                 String address = getAddressByLocation(latLng);
-                Log.d("ADDRESS: ", address);
                 setSearchedPlaceMarker(latLng, address);
 
             }
@@ -124,6 +132,7 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
 
             @Override
             public void onMarkerDragEnd(@NonNull Marker marker) {
+                searchedLocation = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
             }
 
             @Override
@@ -161,6 +170,8 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
     private void setSearchedPlaceMarker(LatLng location, String placeName) {
         if(searchedPlaceMarker != null) searchedPlaceMarker.remove();
 
+        searchedLocation = location;
+        placeTitle = placeName;
         MarkerOptions options = new MarkerOptions().position(location)
                 .title(placeName)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)).draggable(true);
@@ -225,5 +236,42 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
 
     public void goBack(View view) {
         finish();
+    }
+
+    public void addPlaceToDB(View view) {
+        if(searchedLocation != null){
+            if(placeTitle.equals("")){
+                Date date = new Date();
+                SimpleDateFormat simpleFormat = new SimpleDateFormat("MMMM dd, yyyy");
+                placeTitle = simpleFormat.format(date.getTime());
+            }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Set "+ placeTitle+" as visited or not visited");
+            builder.setPositiveButton("Visited", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Place place = new Place(-1, placeTitle, searchedLocation.latitude, searchedLocation.longitude, 1);
+                    if(dbHelper.addNewPlace(place)){
+                        Toast.makeText(getApplicationContext(), placeTitle + " has been added to place list", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(getApplicationContext(), placeTitle + " couldn't add", Toast.LENGTH_SHORT).show();
+                    };
+                }
+            });
+            builder.setNegativeButton("Not Visited", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Place place = new Place(-1, placeTitle, searchedLocation.latitude, searchedLocation.longitude, 0);
+                    if(dbHelper.addNewPlace(place)){
+                        Toast.makeText(getApplicationContext(), placeTitle + " has been added to place list", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(getApplicationContext(), placeTitle + " couldn't add", Toast.LENGTH_SHORT).show();
+                    };
+                }
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
     }
 }
