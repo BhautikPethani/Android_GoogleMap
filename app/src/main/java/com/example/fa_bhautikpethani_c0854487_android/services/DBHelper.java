@@ -2,10 +2,14 @@ package com.example.fa_bhautikpethani_c0854487_android.services;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.fa_bhautikpethani_c0854487_android.Model.Place;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -49,5 +53,60 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_STATUS, place.getStatus());
 
         return sqLiteDatabase.insert(TABLE_NAME, null, contentValues) != -1;
+    }
+
+    public List<Place> getAllPlaces(int status){
+        List<Place> placeList = new ArrayList<>();
+
+        SQLiteDatabase sqLiteDatabase = getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + "=" + status + ";", null);
+        if (cursor.moveToFirst()) {
+            do {
+                // create an employee instance
+                placeList.add(new Place(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getDouble(2),
+                        cursor.getDouble(3),
+                        cursor.getInt(4)));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return placeList;
+    }
+
+    public List<Place> searchPlace(String keyword, int status) {
+        List<Place> placeList = new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = getReadableDatabase();
+        Cursor cursor =  sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_ADDRESS +" LIKE '%"+keyword+"%' AND " + COLUMN_STATUS + "=" + status + ";", null);
+        if (cursor.moveToFirst()) {
+            do {
+                // create an employee instance
+                placeList.add(new Place(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getDouble(2),
+                        cursor.getDouble(3),
+                        cursor.getInt(4)));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return placeList;
+    }
+
+    public boolean updatePlace(Place place) {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_ADDRESS, place.getPlaceAddress());
+        contentValues.put(COLUMN_LATITUDE, place.getLatitude());
+        contentValues.put(COLUMN_LONGITUDE, place.getLongitude());
+        contentValues.put(COLUMN_STATUS, String.valueOf(place.getStatus()));
+
+        return sqLiteDatabase.update(TABLE_NAME,
+                contentValues,
+                COLUMN_ID + "=?",
+                new String[]{String.valueOf(place.getId())}) > 0;
     }
 }

@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/layout/activity_add_new_place.xml" value="0.217210278419255" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19273529052734384" />
         <entry key="app/src/main/res/layout/add_popup_view.xml" value="0.2513586956521739" />
+        <entry key="app/src/main/res/layout/place_list_adapter.xml" value="0.21240942028985507" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1" />
       </map>
     </option>

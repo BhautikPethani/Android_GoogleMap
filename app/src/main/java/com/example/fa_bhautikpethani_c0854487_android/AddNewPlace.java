@@ -235,7 +235,9 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
     }
 
     public void goBack(View view) {
-        finish();
+        Intent intent=new Intent(this,MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        this.startActivity(intent);
     }
 
     public void addPlaceToDB(View view) {
