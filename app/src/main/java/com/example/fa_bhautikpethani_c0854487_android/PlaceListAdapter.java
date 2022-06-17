@@ -126,11 +126,10 @@ public class PlaceListAdapter extends BaseAdapter {
         });
 
         holder.btnEdit.setOnClickListener(v -> {
-//            Intent intent=new Intent(context, ViewTaskActivity.class);
-//            intent.putExtra("taskId", tasks.get(i).getId());
-//            context.startActivity(intent);
+            Intent intent=new Intent(context, UpdatePlace.class);
+            intent.putExtra("placeId", places.get(i).getId());
+            context.startActivity(intent);
         });
-
 
         return view;
     }

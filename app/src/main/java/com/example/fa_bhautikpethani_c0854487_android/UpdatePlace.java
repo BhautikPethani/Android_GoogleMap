@@ -38,7 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback {
+public class UpdatePlace extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private static final int REQUEST_CODE = 1;
@@ -55,19 +55,26 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
     EditText txtSearchPlace;
     String placeTitle = "";
 
+    Place destination;
     DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_new_place);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        setContentView(R.layout.activity_update_place);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        txtSearchPlace = findViewById(R.id.txtMapSearch);
+        txtSearchPlace = findViewById(R.id.txtUpdateMapSearch);
         dbHelper = new DBHelper(this);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            int value = extras.getInt("placeId");
+            destination = dbHelper.getPlace(value);
+        }
     }
 
     @Override
@@ -79,12 +86,6 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-//                startUpdateLocation();
-//                if(currentLocation != null){
-//                    homeMarker.remove();
-//                    LatLng northAmerica = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-//                    setHomeMarker(northAmerica);
-//                }
             }
 
             @Override
@@ -109,6 +110,8 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
             startUpdateLocation();
             LatLng northAmerica = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
             setHomeMarker(northAmerica);
+
+            setSearchedPlaceMarker(new LatLng(destination.getLatitude(), destination.getLongitude()), destination.getPlaceAddress());
         }
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
@@ -195,7 +198,7 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
             List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
             if (addressList != null && addressList.size() > 0) {
                 if (addressList.get(0).getLocality() != null)
-                     return addressList.get(0).getLocality();
+                    return addressList.get(0).getLocality();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -249,9 +252,9 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
             builder.setPositiveButton("Visited", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Place place = new Place(-1, placeTitle, searchedLocation.latitude, searchedLocation.longitude, 1);
-                    if(dbHelper.addNewPlace(place)){
-                        Toast.makeText(getApplicationContext(), placeTitle + " has been added to place list", Toast.LENGTH_SHORT).show();
+                    Place place = new Place(destination.getId(), placeTitle, searchedLocation.latitude, searchedLocation.longitude, 1);
+                    if(dbHelper.updatePlace(place)){
+                        Toast.makeText(getApplicationContext(), placeTitle + " has been updated to place list", Toast.LENGTH_SHORT).show();
                     }else{
                         Toast.makeText(getApplicationContext(), placeTitle + " couldn't add", Toast.LENGTH_SHORT).show();
                     };
@@ -260,9 +263,9 @@ public class AddNewPlace extends FragmentActivity implements OnMapReadyCallback 
             builder.setNegativeButton("Not Visited", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Place place = new Place(-1, placeTitle, searchedLocation.latitude, searchedLocation.longitude, 0);
-                    if(dbHelper.addNewPlace(place)){
-                        Toast.makeText(getApplicationContext(), placeTitle + " has been added to place list", Toast.LENGTH_SHORT).show();
+                    Place place = new Place( destination.getId(), placeTitle, searchedLocation.latitude, searchedLocation.longitude, 0);
+                    if(dbHelper.updatePlace(place)){
+                        Toast.makeText(getApplicationContext(), placeTitle + " has been updated to place list", Toast.LENGTH_SHORT).show();
                     }else{
                         Toast.makeText(getApplicationContext(), placeTitle + " couldn't add", Toast.LENGTH_SHORT).show();
                     };

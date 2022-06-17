@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FA_BhautikPethani_C0854487_Android">
         <activity
+            android:name=".UpdatePlace"
+            android:exported="false" />
+        <activity
             android:name=".ViewPlace"
             android:exported="false"
             android:label="@string/title_activity_view_place"
