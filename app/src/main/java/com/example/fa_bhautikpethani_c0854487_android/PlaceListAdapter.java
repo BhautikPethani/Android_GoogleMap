@@ -1,6 +1,8 @@
 package com.example.fa_bhautikpethani_c0854487_android;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,16 +93,36 @@ public class PlaceListAdapter extends BaseAdapter {
         });
 
         holder.btnRemove.setOnClickListener(v -> {
-            //taskRoomDB.taskDAO().delete(tasks.get(i));
-            Intent intent=new Intent(context,MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            context.startActivity(intent);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Are you sure?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(dbHelper.deletePlace(places.get(i).getId())){
+                        Toast.makeText(context, places.get(i).getPlaceAddress() + " has been deleted", Toast.LENGTH_SHORT).show();
+                        Intent intent=new Intent(context,MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        context.startActivity(intent);
+                    }else{
+                        Toast.makeText(context, places.get(i).getPlaceAddress() + " couldn't delete", Toast.LENGTH_SHORT).show();
+                    };
+
+                }
+            });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         });
 
         holder.btnView.setOnClickListener(v -> {
-//            Intent intent=new Intent(context, ViewTaskActivity.class);
-//            intent.putExtra("taskId", tasks.get(i).getId());
-//            context.startActivity(intent);
+            Intent intent=new Intent(context, ViewPlace.class);
+            intent.putExtra("placeId", places.get(i).getId());
+            context.startActivity(intent);
         });
 
         holder.btnEdit.setOnClickListener(v -> {

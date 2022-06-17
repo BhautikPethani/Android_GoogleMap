@@ -76,6 +76,18 @@ public class DBHelper extends SQLiteOpenHelper {
         return placeList;
     }
 
+    public Place getPlace(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = " + id + ";" , null);
+        c.moveToFirst();
+        return new Place(
+                c.getInt(0),
+                c.getString(1),
+                c.getDouble(2),
+                c.getDouble(3),
+                c.getInt(4));
+    }
+
     public List<Place> searchPlace(String keyword, int status) {
         List<Place> placeList = new ArrayList<>();
         SQLiteDatabase sqLiteDatabase = getReadableDatabase();
@@ -94,6 +106,13 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return placeList;
+    }
+
+    public boolean deletePlace(int id) {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        return sqLiteDatabase.delete(TABLE_NAME,
+                COLUMN_ID + "=?",
+                new String[]{String.valueOf(id)}) > 0;
     }
 
     public boolean updatePlace(Place place) {
